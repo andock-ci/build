@@ -1,0 +1,50 @@
+---
+sudo: required
+dist: trusty
+
+language: php
+php: "7.0"
+
+services:
+  - docker
+
+env:
+  matrix:
+  - ANSIBLE_VERSION=latest
+  global:
+  - secure: QCN/3wjqP+Dr0o3dU5TE+gmJgpziglMfqYnxuWnwO4mercNhRAtNatH11coOt9hA+y7tcSCnR2+CPx0PfoIy3aITW1OY7WzD7DfgfAS7WgeRPdGNWmpKvy5wn5OjDZoAaIA5xaTzDwUATqNiYJhzhM5eFzpemPOOimWpzfGNxVuj2uWeb+ILf4JRC+L3xiqAtBH7NDvyJgsJ55kFEnbAB8vBERBhZu736Y36Cr6l02IF6F/1ljS1vb56t4iFF/WekffBqXptjnn9bKYK+QYPAfPRnMgKdiJ9MHB23FenlTv2v4fOMbNyCDpbKvsbqMeNbvlCrWKnGGARGP1ch89RqU0jTZFkloSKQvcVnWpy1el2S8hE8wKnxGqwD+i5AGZyxenbv8d+p27ienQtNQk/ukZdr70GlscEtLwUF9d/uh8Hj0gph4NPEjuS6c5x/JDYMEEwiTf2B4k/2tdG2W0prBgkY3LrTAuTUL2109mFpmOs/RVsMglLj9SsSbFBYMmOLqG+oaiJJNq6tD0/FcZhlpblrxKyrQQ3NmUdnVbzRjp8q1p9yn7uoc8QJrRvdZStnZwQ5V6EHVXgvbzg8oS6C/EQ3DUFXF/5wjhysKl6wKk1mGqyYKw5cB8LemSX0zKVN8RPm7IOgh5kpcAzSc/ISfRp8IfvW7nv4eGBf/43Upc=
+  - ENCRYPTION_LABEL: "41bee1b0b063"
+  - COMMIT_AUTHOR_EMAIL: "christian.wiedemann@key-tec.de"
+
+branches:
+  only:
+    - master
+
+before_install:
+  # Install php and curl
+  - ./before_install.sh
+
+install:
+  # Install Ansible.
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible-lint; fi
+
+script:
+  # Check the role/playbook's syntax.
+  - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
+
+  # Run the role/playbook with ansible-playbook.
+  - ansible-playbook -i tests/inventory tests/test.yml -vvvv --connection=local
+
+
+  # Run the role/playbook again, checking to make sure it's idempotent.
+  - >
+    ansible-playbook -i tests/inventory tests/test.yml --connection=local
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
+
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then ansible-lint tests/test.yml || true; fi
+
+cache:
+  - pip

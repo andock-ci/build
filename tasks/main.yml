@@ -1,0 +1,49 @@
+---
+- name: Clean build_dir
+  file:
+    state: absent
+    path: "{{ build_dir }}/"
+
+- name: Build build_dir
+  file:
+    state: directory
+    path: "{{ build_dir }}/"
+
+- name: check out a git repository
+  local_action:
+    module: git
+    repo: "{{ git_source_repository_path }}"
+    dest: "{{ build_dir }}"
+    version: "{{ branch }}"
+    accept_hostkey: true
+
+- name: git add remote
+  shell: git remote add remote "{{ git_target_repository_path }}"
+  args:
+    chdir: "{{ build_dir }}"
+
+- name: Remove from gitignore
+  blockinfile:
+    path: "{{ build_dir }}/.gitignore"
+    marker: "#### {mark} COMPOSER ###"
+    content: ""
+
+- name: composer install
+  shell: fin rc -T composer install
+  args:
+    chdir: "{{ build_dir }}"
+
+- name: git add files
+  shell: git add .
+  args:
+    chdir: "{{ build_dir }}"
+
+- name: git commit files
+  shell: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
+  args:
+    chdir: "{{ build_dir }}"
+
+- name: git push
+  shell: "git push --force remote {{ branch }}:{{ branch }}-build"
+  args:
+    chdir: "{{ build_dir }}"

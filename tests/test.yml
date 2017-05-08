@@ -1,0 +1,11 @@
+---
+- name: Deploy gitlab repository to acquia repository
+  hosts: localhost
+  remote_user: cw
+  roles:
+    - role: andock-ci-build
+      git_source_repository_path: git@github.com:KEY-TEC/drupal-8-keytec-demo.git
+      git_target_repository_path: git@github.com:KEY-TEC/drupal-8-keytec-demo-target.git
+      build_dir: ~/ansible
+      branch: "gitlab-automate"
+
