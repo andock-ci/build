@@ -20,7 +20,7 @@
     accept_hostkey: true
   tags: checkout
 
-- include: "{{ hook_variable | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
+- include: "{{ hook_build_tasks | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
 
 - name: git add remote repository "{{ git_target_repository_path }}"
   command: git remote add remote "{{ git_target_repository_path }}" warn=no
