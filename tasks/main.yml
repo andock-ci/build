@@ -22,13 +22,15 @@
 
 - include: "{{ hook_variable | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
 
-- name: git add remote
+- name: git add remote repository "{{ git_target_repository_path }}"
   command: git remote add remote "{{ git_target_repository_path }}"
   args:
+    warn: false
     chdir: "{{ build_dir }}"
   tags: prepare_commit
 
-- name: Remove from gitignore
+
+- name: Configure gitignore
   blockinfile:
     path: "{{ build_dir }}/.gitignore"
     marker: "#### {mark} COMPOSER ###"
