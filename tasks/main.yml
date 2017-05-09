@@ -3,11 +3,13 @@
   file:
     state: absent
     path: "{{ build_dir }}/"
+  tags: setup
 
 - name: Build build_dir
   file:
     state: directory
     path: "{{ build_dir }}/"
+  tags: setup
 
 - name: check out a git repository
   local_action:
@@ -16,34 +18,37 @@
     dest: "{{ build_dir }}"
     version: "{{ branch }}"
     accept_hostkey: true
+  tags: checkout
+
+- include: "{{ hook_variable | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
 
 - name: git add remote
-  shell: git remote add remote "{{ git_target_repository_path }}"
+  command: git remote add remote "{{ git_target_repository_path }}"
   args:
     chdir: "{{ build_dir }}"
+  tags: prepare_commit
 
 - name: Remove from gitignore
   blockinfile:
     path: "{{ build_dir }}/.gitignore"
     marker: "#### {mark} COMPOSER ###"
     content: ""
-
-- name: composer install
-  shell: fin rc -T composer install
-  args:
-    chdir: "{{ build_dir }}"
+  tags: prepare_commit
 
 - name: git add files
-  shell: git add .
+  command: git add .
   args:
     chdir: "{{ build_dir }}"
+  tags: prepare_commit
 
 - name: git commit files
-  shell: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
+  command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
   args:
     chdir: "{{ build_dir }}"
+  tags: commit
 
 - name: git push
-  shell: "git push --force remote {{ branch }}:{{ branch }}-build"
+  command: "git push --force remote {{ branch }}:{{ branch }}-build"
   args:
     chdir: "{{ build_dir }}"
+  tags: push
