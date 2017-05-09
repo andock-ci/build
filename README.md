@@ -2,17 +2,17 @@ andock-ci-build (A drupal docksal build script.)
 =========
 
 **andock-ci-build** is a Ansible role which:
-* Checkout a php repository (e.g. from github)
-* run build tasks (like composer, npm etc.) with docksal (http://docksal.io/)
-* push all build artifacts to a target build repository (Can be a differnt like Acquia or the same. Andock push to {{ branch }}-build branch.)  
+* Checks out a php repository (e.g. from github)
+* runs build tasks (like composer, npm etc.) with docksal (http://docksal.io/)
+* pushes all build artifacts to a target build repository (can be a different one like Acquia or the same. Andock CI pushes to {{ branch }}-build branch.)  
   
 
 Requirements
 ------------
 
-In order to build your apps with Ansistrano, you will need:
+In order to build your apps with Andock CI, you will need:
 
-* Ansible in your deployer machine
+* Ansible in your deploy machine
 * docksal (http://docksal.io/) on your target machine
 * git on both machines
 
@@ -31,7 +31,7 @@ vars:
 Installation
 ------------
 
-Ansistrano is an Ansible role distributed globally using [Ansible Galaxy](https://galaxy.ansible.com/). In order to install Ansistrano role you can use the following command.
+Andock-CI is an Ansible role distributed globally using [Ansible Galaxy](https://galaxy.ansible.com/). In order to install Andock-CI role you can use the following command.
 
 ```
 $ ansible-galaxy install andock-ci.andock-ci-build
@@ -75,4 +75,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Christian Wiedemann (christian.wiedemann@key-tec.de)
