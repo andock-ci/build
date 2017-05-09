@@ -23,7 +23,7 @@
 - include: "{{ hook_variable | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
 
 - name: git add remote repository "{{ git_target_repository_path }}"
-  command: git remote add remote "{{ git_target_repository_path }}"
+  command: git remote add remote "{{ git_target_repository_path }}" warn=no
   args:
     warn: false
     chdir: "{{ build_dir }}"

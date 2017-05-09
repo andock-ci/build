@@ -8,4 +8,4 @@
       git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git
       build_dir: ~/ansible
       branch: "master"
-
+      hook_variable: "hooks/build.yml"
