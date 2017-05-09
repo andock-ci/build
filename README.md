@@ -3,7 +3,7 @@ andock-ci-build (A drupal docksal build script.)
 
 **andock-ci-build** is a Ansible role which:
 * Checks out a php repository (e.g. from github)
-* runs build tasks (like composer, npm etc.) with docksal (http://docksal.io/)
+* runs build tasks (like composer, npm etc.). We recomend docksal (http://docksal.io/).
 * pushes all build artifacts to a target build repository (can be a different one like Acquia or the same. Andock CI pushes to {{ branch }}-build branch.)  
   
 
@@ -65,6 +65,43 @@ Including an example of how to use your role (for instance, with variables passe
           git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git
           build_dir: ~/ansible
           branch: "master"
+
+Example gitlab configuration with shell executor
+----------------
+.gitlab-ci.yml:
+
+    stages:
+      - build
+    
+    before_script:
+      # Install ssh if not already installed (https://docs.gitlab.com/ee/ci/ssh_keys/README.html#ssh-keys-when-using-the-docker-executor)
+      # Install ansible if it is not installed (pip install ansible) 
+      # Install the tools you need to compile your project. Such as composer. I recommend to use docksal. 
+    
+    build:
+      stage: build
+      script:
+        - ansible-playbook .ansible/build.yml --extra-vars "branch=$branch build_dir=$CI_PROJECT_DIR/build git_source_repository_path=$CI_REPOSITORY_URL" --connection=local
+
+playbook under .ansible/build.yml
+
+    - name: Deploy repository to build repository
+      hosts: localhost
+      remote_user: cw
+      roles:
+        - role: andock-ci-build
+          git_source_repository_path: {{ git_source_repository_path }}
+          git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git
+          build_dir: "{{ build_dir }}"
+          branch: "{{ branch }}"
+          hook_build_tasks: "hooks/build_tasks.yml"
+
+build hooks under .ansible/hooks/build.yml
+
+    - name: composer install
+      command: fin rc -T composer install
+      args:
+        chdir: "{{ build_dir }}"
 
 
 License
