@@ -1,11 +1,11 @@
 ---
-- name: Build build_dir
+- name: Create build_dir
   file:
     state: directory
     path: "{{ checkout_dir }}"
   tags: setup
 
-- name: check out a git repository
+- name: check out git repository
   local_action:
     module: git
     repo: "{{ git_source_repository_path }}"
@@ -25,8 +25,8 @@
 - name: copy to push directory
   synchronize:
     mode: "pull"
-    src: "{{ checkout_dir }}/*"
-    dest: "{{ push_dir }}"
+    src: "{{ checkout_dir }}"
+    dest: "{{ build_dir }}/push"
 
 - name: find all gitignores
   shell: "find 2>/dev/null | egrep /\\.gitignore$"
