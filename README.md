@@ -68,6 +68,25 @@ Including an example of how to use your role (for instance, with variables passe
           branch: "master"
           hook_build_tasks: "hooks/build_tasks.yml"
 
+
+Handling .gitignore 
+----------------
+
+You can mark parts in your .gitignore files with "BEGIN REMOVE ANDOCK-CI" --- END REMOVE ANDOCK-CI.
+andock-ci will remove that blocks before it will be commited to target repository
+ 
+
+        #Sample .gitignore file for a drupal 8 composer project
+        .idea
+        
+        #### BEGIN REMOVE ANDOCK-CI ###
+        docroot/core
+        docroot/modules/contrib
+        docroot/themes/contrib
+        docroot/profiles/contrib
+        vendor
+        #### END REMOVE ANDOCK-CI ###
+
 Example gitlab configuration with shell executor 
 ----------------
 .gitlab-ci.yml:
