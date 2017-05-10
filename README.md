@@ -3,8 +3,8 @@ andock-ci-build (A drupal docksal build script.)
 
 **andock-ci-build** is a Ansible role which:
 * Checks out a php repository (e.g. from github)
-* runs build tasks (like composer, npm etc.). We recomend docksal (http://docksal.io/).
-* pushes all build artifacts to a target build repository (can be a different one like Acquia or the same. Andock CI pushes to {{ branch }}-build branch.)  
+* Runs build tasks (like composer, npm etc.). We use docksal (http://docksal.io/) because there all gears included to build your projects. But it is not needed. 
+* Pushes all build artifacts to a target build repository (can be a different one like Acquia or the same. Andock CI pushes to {{ branch }}-build branch.)  
   
 
 Requirements
@@ -13,7 +13,7 @@ Requirements
 In order to build your apps with Andock CI, you will need:
 
 * Ansible in your deploy machine
-* docksal (http://docksal.io/) on your target machine
+* build tools like composer or something else
 * git on both machines
 
 
@@ -26,6 +26,7 @@ vars:
   git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git # The target repository. Can be the same repository as the source repository 
   build_dir: ~/ansible # The path where the build happens
   branch: "master" # The source branch. The target branch would be master-build
+  hook_build_tasks: "hooks/build_tasks.yml" # The path to your build_tasks hook file
 ```
 
 Installation
@@ -65,8 +66,9 @@ Including an example of how to use your role (for instance, with variables passe
           git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git
           build_dir: ~/ansible
           branch: "master"
+          hook_build_tasks: "hooks/build_tasks.yml"
 
-Example gitlab configuration with shell executor
+Example gitlab configuration with shell executor 
 ----------------
 .gitlab-ci.yml:
 
@@ -74,9 +76,8 @@ Example gitlab configuration with shell executor
       - build
     
     before_script:
-      # Install ssh if not already installed (https://docs.gitlab.com/ee/ci/ssh_keys/README.html#ssh-keys-when-using-the-docker-executor)
-      # Install ansible if it is not installed (pip install ansible) 
-      # Install the tools you need to compile your project. Such as composer. I recommend to use docksal. 
+      - sudo ansible-galaxy install --force andock-ci.andock-ci-build #Update ansible role
+      # Configure ssh keys (https://docs.gitlab.com/ee/ci/ssh_keys/README.html#ssh-keys-when-using-the-docker-executor)
     
     build:
       stage: build
@@ -87,7 +88,7 @@ playbook under .ansible/build.yml
 
     - name: Deploy repository to build repository
       hosts: localhost
-      remote_user: cw
+      remote_user: user
       roles:
         - role: andock-ci-build
           git_source_repository_path: {{ git_source_repository_path }}
