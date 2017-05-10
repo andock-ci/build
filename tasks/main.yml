@@ -1,70 +1,76 @@
 ---
-- name: Clean build_dir
-  file:
-    state: absent
-    path: "{{ build_dir }}/"
-  tags: setup
-
 - name: Build build_dir
   file:
     state: directory
-    path: "{{ build_dir }}/"
+    path: "{{ checkout_dir }}"
   tags: setup
 
 - name: check out a git repository
   local_action:
     module: git
     repo: "{{ git_source_repository_path }}"
-    dest: "{{ build_dir }}"
+    dest: "{{ checkout_dir }}"
     version: "{{ branch }}"
     accept_hostkey: true
   tags: checkout
 
+- include: "{{ hook_build_tasks | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
+
+- name: Clean push_dir
+  file:
+    state: absent
+    path: "{{ push_dir }}"
+  tags: prepare_commit
+
+- name: copy to push directory
+  synchronize:
+    mode: "pull"
+    src: "{{ checkout_dir }}/*"
+    dest: "{{ push_dir }}"
+
 - name: find all gitignores
   shell: "find 2>/dev/null | egrep /\\.gitignore$"
   args:
-    chdir: "{{ build_dir }}"
+    chdir: "{{ push_dir }}"
   register: gitignore_to_check
   ignore_errors: yes
   tags: prepare_commit
 
 - name: Remove markers in gitignore "#### BEGIN REMOVE ANDOCK-CI ..."
   blockinfile:
-    path: "{{ build_dir }}/{{ item }}"
+    path: "{{ push_dir }}/{{ item }}"
     marker: "#### {mark} REMOVE ANDOCK-CI ###"
     content: ""
   with_items: "{{ gitignore_to_check.stdout_lines }}"
   tags: prepare_commit
 
-- include: "{{ hook_build_tasks | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
-
 - name: git add remote repository "{{ git_target_repository_path }}"
   command: git remote add remote "{{ git_target_repository_path }}" warn=no
   args:
     warn: false
-    chdir: "{{ build_dir }}"
+    chdir: "{{ push_dir }}"
   tags: prepare_commit
 
 - name: Remove all git folders without the root .git directory
   shell: "ls | xargs find 2>/dev/null | egrep /\\.git$ | xargs rm -rf"
   args:
-    chdir: "{{ build_dir }}"
+    chdir: "{{ push_dir }}"
   tags: prepare_commit
 
 - name: git add files
   command: git add .
   args:
-    chdir: "{{ build_dir }}"
+    chdir: "{{ push_dir }}"
   tags: prepare_commit
 
 - name: git commit files
   command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
   args:
-    chdir: "{{ build_dir }}"
+    chdir: "{{ push_dir }}"
   tags: commit
 
 - name: git push
   command: "git push --force remote {{ branch }}:{{ branch }}-build"
   args:
-    chdir: "{{ build_dir }}"
+    chdir: "{{ push_dir }}"
   tags: push
