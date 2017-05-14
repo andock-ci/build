@@ -7,12 +7,11 @@
     tags: setup
 
   - name: Check out git repository
-    local_action:
-      module: git
-      repo: "{{ git_source_repository_path }}"
-      dest: "{{ checkout_dir }}"
-      version: "{{ branch }}"
-      accept_hostkey: true
+    module: git
+    repo: "{{ git_source_repository_path }}"
+    dest: "{{ checkout_dir }}"
+    version: "{{ branch }}"
+    accept_hostkey: true
     tags: checkout
 
   - include: "{{ hook_build_tasks | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
