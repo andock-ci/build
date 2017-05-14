@@ -75,8 +75,3 @@
       chdir: "{{ push_dir }}"
     tags: push
 
-  rescue:
-  - name: Build failed. Clean up build dir. Restart your build to checkout again.
-    file:
-      state: absent
-      path: "{{ build_dir }}"
