@@ -6,12 +6,12 @@
       path: "{{ checkout_dir }}"
     tags: setup
 
-  - name: Check out git repository
-    module: git
-    repo: "{{ git_source_repository_path }}"
-    dest: "{{ checkout_dir }}"
-    version: "{{ branch }}"
-    accept_hostkey: true
+  - git:
+      repo: "{{ git_source_repository_path }}"
+      dest: "{{ checkout_dir }}"
+      version: "{{ branch }}"
+      accept_hostkey: true
+      force: yes
     tags: checkout
 
   - include: "{{ hook_build_tasks | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
@@ -75,7 +75,7 @@
       chdir: "{{ push_dir }}"
     tags: push
 
-- rescue:
+  rescue:
   - name: Build failed. Clean up build dir. Restart your build to checkout again.
     file:
       state: absent
