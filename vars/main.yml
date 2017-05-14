@@ -4,4 +4,4 @@ build_dir: .
 
 checkout_dir: "{{ build_dir }}/checkout"
 
-push_dir: "{{ build_dir }}/push/checkout"
+push_dir: "{{ build_dir }}/push"

@@ -23,10 +23,7 @@
     tags: prepare_commit
 
   - name: Copy to push directory
-    synchronize:
-      mode: "pull"
-      src: "{{ checkout_dir }}"
-      dest: "{{ build_dir }}/push"
+    command: "cp -R {{ checkout_dir }} {{ build_dir }}/push"
 
   - name: Find all gitignores
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
