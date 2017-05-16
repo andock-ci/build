@@ -42,7 +42,7 @@
     tags: prepare_commit
 
   - name: Git add remote repository "{{ git_target_repository_path }}"
-    command: git remote add remote "{{ git_target_repository_path }}" warn=no
+    command: git remote set-url origin "{{ git_target_repository_path }}"
     args:
       warn: false
       chdir: "{{ push_dir }}"
@@ -66,8 +66,13 @@
       chdir: "{{ push_dir }}"
     tags: commit
 
+  - name: Crate tag
+    include: "tag.yml"
+    tags: tagging
+    when: create_git_tag
+
   - name: BAAAM! Push it
-    command: "git push --force remote {{ branch }}:{{ branch }}-build"
+    command: "git push --force origin {{ branch }}:{{ branch }}-build"
     args:
       chdir: "{{ push_dir }}"
     tags: push

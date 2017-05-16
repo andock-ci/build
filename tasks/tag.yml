@@ -1,0 +1,50 @@
+- name: Check for remotes
+  command: "git remote"
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+  register: has_remotes
+
+- name: Fetch existing tags
+  command: "git fetch --tags"
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+  when: has_remotes.stdout.strip()
+
+- name: Check for existing tag
+  command: "git rev-parse --verify -q --short {{git_tag}}"
+  ignore_errors: True
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+  register: existing_tag
+
+- name: Check for tag matching pattern
+  command: "git describe --match \"{{ skip_if_tag_matching }}\" --tags --exact-match"
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+  when: skip_if_tag_matching is defined
+  ignore_errors: True
+  register: matching_tags
+
+- name: Check current HEAD
+  command: "git rev-parse --verify -q --short HEAD"
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+  register: current_head
+
+- name: Create Git tag
+  command: "git tag {{git_tag}}"
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+
+- name: Push tags
+  command: "git push --tags"
+  args:
+    warn: false
+    chdir: "{{push_dir}}"
+  when: has_remotes.stdout.strip() and existing_tag.stdout.strip() != current_head.stdout.strip()

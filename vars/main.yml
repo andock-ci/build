@@ -2,6 +2,12 @@
 # vars file for andock-ci-build
 build_dir: .
 
+branch: "master"
+
 checkout_dir: "{{ build_dir }}/checkout"
 
 push_dir: "{{ build_dir }}/push"
+
+git_tag: "{{branch}}-{{ansible_date_time.date}}"
+
+create_git_tag: true
