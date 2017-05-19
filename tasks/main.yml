@@ -6,13 +6,16 @@
       path: "{{ checkout_dir }}"
     tags: setup
 
-  - git:
+  - name: git checkout
+    git:
       repo: "{{ git_source_repository_path }}"
       dest: "{{ checkout_dir }}"
       version: "{{ branch }}"
       accept_hostkey: true
       force: yes
     tags: checkout
+    when: git_source_repository_path is defined
+
 
   - include: "{{ hook_build_tasks | default(lookup('pipe', 'pwd') ~ '/../hooks/empty.yml') }}"
 
@@ -23,7 +26,7 @@
     tags: prepare_commit
 
   - name: Copy to push directory
-    command: "rsync -av --progress {{ build_dir }} {{ push_dir }} --exclude {{ push_dir }}"
+    command: "rsync -a {{ checkout_dir }}/ {{ push_dir }} --exclude {{ push_dir }}"
 
   - name: Find all gitignores
     shell: "find 2>/dev/null | egrep /\\.gitignore$"

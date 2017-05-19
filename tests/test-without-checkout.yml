@@ -1,0 +1,10 @@
+---
+- name: Deploy repository to build repository
+  hosts: localhost
+  remote_user: cw
+  roles:
+    - role: andock-ci-build
+      git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git
+      build_dir: ~/ansible/test
+      branch: "master"
+      hook_build_tasks: "hooks/build_tasks.yml"
