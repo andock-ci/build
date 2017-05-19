@@ -23,7 +23,7 @@
     tags: prepare_commit
 
   - name: Copy to push directory
-    command: "cp -R {{ checkout_dir }} {{ build_dir }}/push"
+    command: "rsync -av --progress {{ build_dir }} {{ push_dir }} --exclude {{ push_dir }}"
 
   - name: Find all gitignores
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
