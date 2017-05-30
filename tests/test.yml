@@ -3,7 +3,7 @@
   hosts: localhost
   remote_user: cw
   roles:
-    - role: andock-ci-build
+    - role: build
       git_source_repository_path: git@github.com:andock-ci/drupal-8-demo.git
       git_target_repository_path: git@github.com:andock-ci/drupal-8-demo-build.git
       build_dir: ~/andock-ci/build/drupal-8-demo
