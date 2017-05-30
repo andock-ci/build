@@ -17,7 +17,7 @@
     when: git_source_repository_path is defined
 
 
-  - include: "{{ hook_build_tasks | default(role_path ~ '/../hooks/empty.yml') }}"
+  - include: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
   - name: Clean push_dir
     file:
