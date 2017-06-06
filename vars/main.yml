@@ -4,4 +4,4 @@ build_path: .
 
 checkout_path: "{{ build_path }}"
 
-push_path: "{{ build_dir }}/andock-push"
+push_path: "{{ build_path }}/andock-push"
