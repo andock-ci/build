@@ -1,4 +1,4 @@
 - name: composer install
   command: fin rc -T composer install
   args:
-    chdir: "{{ checkout_dir }}"
+    chdir: "{{ checkout_path }}"

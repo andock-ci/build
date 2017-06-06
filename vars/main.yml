@@ -1,7 +1,7 @@
 ---
 # vars file for andock-ci-build
-build_dir: .
+build_path: .
 
-checkout_dir: "{{ build_dir }}"
+checkout_path: "{{ build_path }}"
 
-push_dir: "{{ build_dir }}/andock-push"
+push_path: "{{ build_dir }}/andock-push"
