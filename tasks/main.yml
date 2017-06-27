@@ -16,6 +16,12 @@
     tags: checkout
     when: git_source_repository_path is defined
 
+  - name: Get commit author
+    shell: git --no-pager show -s --format='%an <%ae>' HEAD
+    args:
+      chdir: "{{ checkout_path }}"
+    register: git_author
+    tags: prepare_commit
 
   - include: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
@@ -64,7 +70,7 @@
     tags: prepare_commit
 
   - name: Commit files
-    command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
+    command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\" --author={{ git_author.stdout }}"
     args:
       chdir: "{{ push_path }}"
     tags: commit

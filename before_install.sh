@@ -9,7 +9,5 @@ chmod 600 ~/.ssh/id_rsa
 eval `ssh-agent -s`
 ssh-add ~/.ssh/id_rsa
 mv -fv ssh-config ~/.ssh/config
-git config --global user.email "christian.wiedemann@key-tec.de"
-git config --global user.name "KEY-TEC (via TravisCI)"
 
 sudo curl -fsSL get.docksal.io | sh
