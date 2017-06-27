@@ -25,7 +25,7 @@
 
   - include: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
-  - name: Clean push_path
+  - name: Delete push directory
     file:
       state: absent
       path: "{{ push_path }}"
@@ -81,3 +81,8 @@
       chdir: "{{ push_path }}"
     tags: push
 
+  always:
+    - name: Clean up push directory
+      file:
+        state: absent
+        path: "{{ push_path }}"
