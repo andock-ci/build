@@ -16,13 +16,6 @@
     tags: checkout
     when: git_source_repository_path is defined
 
-  - name: Get commit author
-    shell: git --no-pager show -s --format='%an <%ae>' HEAD
-    args:
-      chdir: "{{ checkout_path }}"
-    register: git_author
-    tags: prepare_commit
-
   - include: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
   - name: Delete push directory
@@ -49,6 +42,7 @@
       content: ""
     with_items: "{{ gitignore_to_check.stdout_lines }}"
     tags: prepare_commit
+    no_log: true
 
   - name: Git add remote repository "{{ git_target_repository_path }}"
     command: git remote add remote "{{ git_target_repository_path }}" warn=no
@@ -69,8 +63,20 @@
       chdir: "{{ push_path }}"
     tags: prepare_commit
 
+  - name: git config user.name
+    shell: git config user.name $(git --no-pager show -s --format='%an' HEAD)
+    args:
+      chdir: "{{ push_path }}"
+    tags: prepare_commit
+
+  - name: git config user.email
+    shell: git config user.email $(git --no-pager show -s --format='%ae' HEAD)
+    args:
+      chdir: "{{ push_path }}"
+    tags: prepare_commit
+
   - name: Commit files
-    command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\" --author=\"{{ git_author.stdout }}\""
+    command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
     args:
       chdir: "{{ push_path }}"
     tags: commit
