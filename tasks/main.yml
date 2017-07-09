@@ -18,12 +18,6 @@
 
   - include: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
-  - name: Delete push directory
-    file:
-      state: absent
-      path: "{{ push_path }}"
-    tags: prepare_commit
-
   - name: Copy to push directory
     command: "rsync -a {{ checkout_path }}/ {{ push_path }} --exclude {{ push_path }}"
 
@@ -88,6 +82,9 @@
     tags: push
 
   always:
+    - name: Prepare clean up
+      file: dest="{{ push_path }}" mode=777  recurse=yes
+
     - name: Clean up push directory
       file:
         state: absent
