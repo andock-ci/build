@@ -6,4 +6,6 @@ checkout_path: "{{ build_path }}"
 
 push_path: "{{ build_path }}/andock-push"
 
-build_branch_suffix: "-build"
+target_branch_suffix: "-build"
+
+target_branch: "{{ branch }}{{ target_branch_suffix }}"
