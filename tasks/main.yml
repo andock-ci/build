@@ -76,7 +76,7 @@
     tags: commit
 
   - name: BAAAM! Push it
-    command: "git push --force remote {{ branch }}:{{ branch }}-build"
+    command: "git push --force remote {{ branch }}:{{ branch }}{{ build_branch_suffix }}"
     args:
       chdir: "{{ push_path }}"
     tags: push

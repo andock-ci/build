@@ -5,3 +5,5 @@ build_path: .
 checkout_path: "{{ build_path }}"
 
 push_path: "{{ build_path }}/andock-push"
+
+build_branch_suffix: "-build"
