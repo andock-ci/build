@@ -75,7 +75,7 @@
     tags: prepare_commit
 
   - name: "Commit files"
-    command: "git diff-index --quiet HEAD || git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
+    command: "git diff --quiet && git diff --staged --quiet  || git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
     args:
       chdir: "{{ push_path }}"
     tags: commit
@@ -90,7 +90,4 @@
     - name: "Prepare clean up"
       file: dest="{{ push_path }}" mode=777  recurse=yes
 
-    - name: "Clean up: Remove push directory"
-      file:
-        state: absent
-        path: "{{ push_path }}"
+
