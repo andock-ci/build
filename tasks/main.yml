@@ -75,7 +75,7 @@
     tags: prepare_commit
 
   - name: "Commit files"
-    command: "git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
+    command: "git diff-index --quiet HEAD || git commit -am \"Build: {{ ansible_date_time.iso8601 }}\""
     args:
       chdir: "{{ push_path }}"
     tags: commit
