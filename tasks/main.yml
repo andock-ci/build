@@ -16,7 +16,7 @@
     tags: checkout
     when: git_source_repository_path is defined
 
-  - include: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
+  - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
   - name: "Remove old push directory. (If one exists)"
     file:
