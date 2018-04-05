@@ -19,6 +19,7 @@ env:
 branches:
   only:
     - master
+    - develop
 
 before_install:
   # Install php and curl
@@ -26,8 +27,7 @@ before_install:
 
 install:
   # Install Ansible.
-  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
-  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible-lint; fi
+  - sudo pip install ansible==2.4
 
 script:
   # Check the role/playbook's syntax.
